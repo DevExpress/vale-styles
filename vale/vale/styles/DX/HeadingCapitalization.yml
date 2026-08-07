@@ -1,0 +1,10 @@
+extends: capitalization
+message: "'%s' doesn't match our guidelines for title case. See tw wiki for details."
+level: warning
+scope: heading
+match: $title
+style: Chicago
+exceptions:
+  - v[0-9]+[0-9]+[.][0-9]+
+  - AI-powered
+  - "Does this example address your development requirements/objectives?"

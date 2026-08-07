@@ -1,0 +1,7 @@
+extends: substitution
+message: "Use the correct name spelling: '%s' instead of '%s'"
+level: error
+ignorecase: true
+swap:
+  C\+\+ Builder: "C++Builder"
+  VLC: "VCL"

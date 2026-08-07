@@ -1,0 +1,8 @@
+extends: substitution
+message: 'Capitalize a proper noun or conform term capitalization to our guidelines - "%s".'
+level: error
+ignorecase: false
+swap:
+  gantt: "Gantt"
+  boolean: "Boolean"
+  AI-Powered: "AI-powered" 

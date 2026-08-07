@@ -1,0 +1,15 @@
+extends: substitution
+message: "Prefer '%s' over '%s'."
+level: warning
+ignorecase: true
+scope: sentence
+action:
+  name: replace
+swap:
+  alphanumerical: alphanumeric
+  anti-aliasing: antialiasing
+  anti-malware: antimalware
+  anti-spyware: antispyware
+  anti-virus: antivirus
+  appendixes: appendices
+  data base: database

@@ -1,0 +1,9 @@
+# This rule flags plural forms of uncountable nouns.
+extends: substitution
+message: "Avoid using plural forms of uncountable noun: '%s', not '%s'."
+level: warning
+scope: text
+ignorecase: true
+swap:
+  \b(?<!table of)\scontents\b: content
+  \b(?<!error)(?<!character)\scodes\b: code

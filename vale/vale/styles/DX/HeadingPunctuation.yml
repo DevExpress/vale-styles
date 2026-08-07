@@ -1,0 +1,15 @@
+extends: existence
+message: "Don't use end punctuation at the end of headings."
+nonword: true
+level: warning
+scope: heading
+action:
+  name: edit
+  params:
+    - remove
+    - '.?!'
+tokens:
+  - '.*[.?!](?:\s|$)'
+exceptions:
+  - "Does This Example Address Your Development Requirements/Objectives?"
+  - "Does this example address your development requirements/objectives?"

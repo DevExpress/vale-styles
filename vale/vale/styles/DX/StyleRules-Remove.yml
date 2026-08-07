@@ -1,0 +1,33 @@
+extends: substitution
+message: '%s'
+level: error
+ignorecase: true
+swap:
+  participate(?:s?|ing?|ed?): "Find an alternative. 'Participate' is mostly misused in documentation."
+  no any: "'No any' is an improper use, say 'no' instead."
+  recurrent: "Use 'recurring' instead of 'reccurent'."
+  self-referential: "Use 'self-referencing' instead of 'self-referential'."
+  at once: "Better alternative: 'simultaneously'."
+  represent(?:s?|ing?): "Use 'is' instead of `represent`, or come up with a more specific verb."
+  (?:demonstrates|shows) how (?:to|you can): "Remove the 'V + how to + V' construction and only use the verb that comes next. E.g. 'shows how to use' -> 'uses'."
+  whose: "Consider rewriting the sentence without 'whose'."
+  improvements: "Better alternative for 'improvements': 'enhancements'"
+  special (?!character\b)(?!characters\b): "Use more useful/specific adjective instead of 'special'."
+  glad: "Better alternatives for 'glad': 'happy' or 'proud'."
+  take a look at: "Better alternative for 'take a look at': 'refer to'. "
+  reside: "Use a different verb instead of 'reside'; depends on context."
+  layouting: "Find a different word/expression instead of 'layouting'."
+  overcome: "'Overcome' is not appropriate in technical documentation, find a better word."
+  in a more convenient way: "Rewrite this phrase without 'in a more convenient way'."
+  concerned with: "'Concerned with' is not appropriate in technical documentation, find a different word/phrase."
+  in the following (?:way|manner): "Better alternative: 'as follows'"
+  whether or not: "Better alternative: 'whether'"
+  (?:code sample|code snippet|example) below: "Better alternative: 'The following code snippet'."
+  after that: "Better alternatives: 'Once complete' or 'Once ready'."
+  insecure: "'Insecure' is a mental health problem, not a security problem. In most cases, you can simply replace with 'unsafe'."
+  attacker: "Do not use 'attacker'. Use 'threat actor' instead."
+  an SQL: "Use 'a SQL query' instead of 'an SQL query'. It's pronounced 'sequel', not 'ess-que-el'."
+  by following: "Give direct instructions: 'Follow the guide / the steps below to ...'."
+  by using: "Better alternative: 'Use ... to ...'."
+  operate?s in: "Use 'supports', 'is available for', or other alternatives depending on context."
+  

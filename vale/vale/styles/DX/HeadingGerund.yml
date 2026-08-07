@@ -1,0 +1,10 @@
+ # avoid gerunds in headings
+extends: existence
+message: "Avoid gerunds in headings: '%s'."
+nonword: true
+level: warning
+scope: heading
+tokens:
+  - '^(\w*)ing\s.*'
+exceptions: 
+  - .*Formatting Markup.*

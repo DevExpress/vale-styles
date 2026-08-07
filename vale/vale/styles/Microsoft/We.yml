@@ -1,0 +1,12 @@
+extends: existence
+message: "Only use we/us when you refer to our organization."
+link: https://docs.microsoft.com/en-us/style-guide/grammar/person#avoid-first-person-plural
+level: warning
+ignorecase: true
+nonword: true
+tokens:
+  - \swe\b
+  - \swe'(?:ve|re)\b
+  - \bours?
+  - \sus\b
+  - \slet's\b

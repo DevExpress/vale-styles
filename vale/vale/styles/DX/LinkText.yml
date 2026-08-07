@@ -1,0 +1,9 @@
+extends: existence
+message: "For better SEO and sentence construction, use target document title as anchor text."
+level: error
+ignorecase: false
+nonword: true
+scope: raw
+tokens:
+  - \[(this|link|here|topic|article|document|blog post)\]\(.*\)
+  - \[(this topic|this article|this document|this blog post)\]\(.*\)

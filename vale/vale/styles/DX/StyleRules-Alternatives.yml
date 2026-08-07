@@ -1,0 +1,12 @@
+extends: substitution
+message: '%s'
+level: warning
+ignorecase: true
+swap:
+  usage: "Better alternative: 'use'"
+  provide(?:s?): "Use a more specific synonym, such as 'include(s)' or 'store(s)'"
+  several: "Better alternative: 'multiple'"
+  (?:starting with|in) v(?:\d\d.\d): "Try to restructure the sentence - avoid such comma-separated clauses at the beginning."
+  with (?:this|the upcoming) release: "Try to restructure the sentence - avoid such comma-separated clauses at the beginning."
+  (?<!Studio )(?<!IDE )(?<!Delphi )(?<!C\+\+Builder )\b(?<!\.)\d\d\.\d\b: "Use 'vXX.Y' instead of just 'XX.Y' when mentioning version numbers."
+  indices: "Better alternative: 'indexes'"

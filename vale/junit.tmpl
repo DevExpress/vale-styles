@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites time="0">
+<testsuite name="Vale.Results" time="0">
+
+{{- /* Range over the linted files */ -}}
+
+{{- range .Files}}
+
+{{- $path := .Path -}}
+
+{{- /* Range over the file's alerts */ -}}
+
+{{- range .Alerts -}}
+
+{{- $error := "" -}}
+{{- if eq .Severity "error" -}}
+    {{- $error = "ERROR" -}}
+{{- else if eq .Severity "warning" -}}
+    {{- $error = "WARNING" -}}
+{{- else -}}
+    {{- $error = "INFO" -}}
+{{- end}}
+
+{{- /* Variables setup */ -}}
+
+{{- $line := printf "%d" .Line -}}
+{{- $col := printf "%d" (index .Span 0) -}}
+{{- $check := printf "%s" .Check -}}
+{{- $message := printf "%s" .Message -}}
+
+{{- /* Output */ -}}
+    <testcase classname="Vale" name="[{{ $check }}] {{ $message | jsonEscape }}" file="{{ $path }}" line="{{ $line }}" time="0">
+        <failure>
+            File: {{ $path }}
+            LineIndex: {{ $line }}
+            LineCount: {{ $col }}
+            Message: "[{{ $check }}] {{ $message | jsonEscape }}"
+            Type: {{ $error }}
+        </failure>
+    </testcase>
+
+{{end -}}
+
+{{end -}}
+</testsuite>
+</testsuites>

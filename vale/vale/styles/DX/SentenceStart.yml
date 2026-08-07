@@ -1,0 +1,19 @@
+extends: existence
+message: "Do not start a sentence with a '%s'. It sounds vague."
+level: error
+scope: sentence
+tokens:
+  - ^But
+  - ^By default
+  - ^So
+  - ^Thus
+  - ^In other words
+  - ^This means that
+  - ^Or
+  - ^And
+  - ^There is
+  - ^There are
+  - ^There was
+  - ^There were
+  - ^This enables
+  - ^This allows
