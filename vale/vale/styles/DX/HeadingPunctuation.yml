@@ -7,9 +7,6 @@ action:
   name: edit
   params:
     - remove
-    - '.?!'
+    - '.!'
 tokens:
   - '.*[.?!](?:\s|$)'
-exceptions:
-  - "Does This Example Address Your Development Requirements/Objectives?"
-  - "Does this example address your development requirements/objectives?"
