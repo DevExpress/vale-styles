@@ -165,6 +165,23 @@ Add an entry to the `Unreleased` section of [CHANGELOG.md](CHANGELOG.md) for eac
 
 The `Release` workflow checks that the tag matches the `package.json` version and that `CHANGELOG.md` has a section for it. The workflow then runs the tests, publishes the package to GitHub Packages, and creates a GitHub release with the changelog section as release notes.
 
+### Test a Release
+
+To check the release workflow, package permissions, or a consumer setup before you merge, publish a prerelease from your branch. The `Release` workflow publishes a prerelease version under the `next` npm tag, so it never becomes the `latest` version, and creates a GitHub prerelease. The release notes come from the `CHANGELOG.md` section of the base version (for example, `1.0.0` for `1.0.0-rc.1`).
+
+```sh
+git switch --detach
+npm version 1.0.0-rc.1 --no-git-tag-version
+git commit -am "Release 1.0.0-rc.1"
+git tag v1.0.0-rc.1
+git push origin v1.0.0-rc.1
+git switch -
+```
+
+The tag points to a commit that is not on any branch, so your branch keeps its version. To test the prerelease in a documentation repository, install the exact version in a branch of that repository: `npm install --save-dev --save-exact @devexpress/vale-styles@1.0.0-rc.1`. After the test, you can delete the prerelease version in the package settings and delete the GitHub prerelease.
+
+### Package Visibility
+
 GitHub Packages makes a new package private, even if the repository is public. After the first release, an organization owner must change the visibility of `@devexpress/vale-styles` to internal in the package settings, so that workflows in other DevExpress repositories can install it.
 
 To support a different Vale version, update `@vvago/vale` in `devDependencies` and the `peerDependencies` range in `package.json`, and run `npm install` and `npm test`. A newer minimum Vale version requires a major release.

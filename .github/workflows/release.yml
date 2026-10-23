@@ -1,6 +1,8 @@
 name: Release
 
 # Publishes @devexpress/vale-styles to GitHub Packages when a maintainer pushes a vX.Y.Z tag.
+# A prerelease tag (vX.Y.Z-rc.N) on any commit, not only main, publishes under the `next`
+# dist-tag and creates a GitHub prerelease. Use it to test a release before merging.
 on:
   push:
     tags: ['v*.*.*']
@@ -27,20 +29,24 @@ jobs:
             echo "::error::Tag $GITHUB_REF_NAME does not match package.json version $version."
             exit 1
           fi
-          awk -v version="$version" '/^## / { printing = ($2 == version); next } printing' CHANGELOG.md > "$RUNNER_TEMP/notes.md"
+          # A prerelease such as 1.1.0-rc.1 uses the notes of 1.1.0.
+          awk -v version="${version%%-*}" '/^## / { printing = ($2 == version); next } printing' CHANGELOG.md > "$RUNNER_TEMP/notes.md"
           if ! grep -q '[^[:space:]]' "$RUNNER_TEMP/notes.md"; then
-            echo "::error::CHANGELOG.md has no '## $version' section."
+            echo "::error::CHANGELOG.md has no '## ${version%%-*}' section."
             exit 1
           fi
 
       - run: npm ci
       - run: npm test
 
-      - run: npm publish
+      # npm 11 refuses to publish a prerelease without an explicit dist-tag.
+      - run: npm publish --tag ${{ contains(github.ref_name, '-') && 'next' || 'latest' }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create the GitHub release
-        run: gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --notes-file "$RUNNER_TEMP/notes.md"
+        run: >-
+          gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --notes-file "$RUNNER_TEMP/notes.md"
+          ${{ contains(github.ref_name, '-') && '--prerelease' || '' }}
         env:
           GH_TOKEN: ${{ github.token }}
