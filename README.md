@@ -12,15 +12,19 @@ The `@devexpress/vale-styles` package is published to GitHub Packages. Each pack
 
 ### Install the Package
 
-1. Create a GitHub personal access token with the `read:packages` scope. GitHub Packages requires a token even for public packages.
-2. Add an `.npmrc` file to the root of your documentation repository:
+1. Add an `.npmrc` file to the root of your documentation repository:
 
    ```ini
    @devexpress:registry=https://npm.pkg.github.com
-   //npm.pkg.github.com/:_authToken=${GITHUB_PACKAGES_TOKEN}
    ```
 
-   Store the token in the `GITHUB_PACKAGES_TOKEN` environment variable on your machine and in CI.
+   Do not add a token to this file. GitHub Actions workflows authenticate with their own `GITHUB_TOKEN` (see [Run Vale in GitHub Actions](#run-vale-in-github-actions)).
+2. GitHub Packages requires a token for every installation. To install the package on your machine, create a personal access token (classic) with the `read:packages` scope and add it to your user-level npm configuration once:
+
+   ```sh
+   npm config set //npm.pkg.github.com/:_authToken=<your-token>
+   ```
+
 3. Install the package and Vale. Pin exact versions so that rule updates arrive only when you upgrade on purpose:
 
    ```sh
@@ -76,29 +80,49 @@ npx vale sync
 npx vale docs/
 ```
 
-The following GitLab CI job checks every file in the `docs` folder and reports alerts as JUnit test results:
+To produce JUnit XML or reviewdog output for CI tools, add `--output=node_modules/@devexpress/vale-styles/dist/templates/junit.tmpl` or `--output=node_modules/@devexpress/vale-styles/dist/templates/rdjsonl.tmpl`.
+
+#### Run Vale in GitHub Actions
+
+The following workflow checks every file in the `docs` folder. It installs the package with the workflow's own `GITHUB_TOKEN`, so the repository does not need a stored secret:
 
 ```yaml
-vale:
-  image: node:lts
-  script:
-    - npm ci
-    - npx vale sync
-    - npx vale --output=node_modules/@devexpress/vale-styles/dist/templates/junit.tmpl docs/ > vale-report.xml
-  artifacts:
-    when: always
-    reports:
-      junit: vale-report.xml
+name: Docs style
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  vale:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: lts/*
+          registry-url: https://npm.pkg.github.com
+          scope: '@devexpress'
+      - run: npm ci
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - run: npx vale sync
+      - run: npx vale docs/
 ```
 
-The `GITHUB_PACKAGES_TOKEN` CI/CD variable must hold a token with the `read:packages` scope. The job also needs network access to GitHub, where `@vvago/vale` downloads the Vale binary. For reviewdog output, use `dist/templates/rdjsonl.tmpl` instead.
+If `npm ci` fails with a 403 error, an owner of the `@devexpress/vale-styles` package must add your repository under **Manage Actions access** in the package settings. CI systems outside GitHub do not have a `GITHUB_TOKEN`. In such systems, store a personal access token with the `read:packages` scope as a secret and add it to the npm configuration before `npm ci` with the `npm config set` command shown in [Install the Package](#install-the-package).
 
 ### Upgrade the Styles
 
 1. Read the [CHANGELOG.md](CHANGELOG.md) entries between your version and the new one.
 2. Update the `@devexpress/vale-styles` version in `package.json`. If the new version requires a different Vale version, update `@vvago/vale` as well.
 3. Run `npm install`, `npx vale sync`, and Vale on all your documentation.
-4. Fix new alerts in the same merge request, so that the check stays green.
+4. Fix new alerts in the same pull request, so that the check stays green.
 
 ## Version Policy
 
@@ -140,5 +164,7 @@ Add an entry to the `Unreleased` section of [CHANGELOG.md](CHANGELOG.md) for eac
    ```
 
 The `Release` workflow checks that the tag matches the `package.json` version and that `CHANGELOG.md` has a section for it. The workflow then runs the tests, publishes the package to GitHub Packages, and creates a GitHub release with the changelog section as release notes.
+
+GitHub Packages makes a new package private, even if the repository is public. After the first release, an organization owner must change the visibility of `@devexpress/vale-styles` to internal in the package settings, so that workflows in other DevExpress repositories can install it.
 
 To support a different Vale version, update `@vvago/vale` in `devDependencies` and the `peerDependencies` range in `package.json`, and run `npm install` and `npm test`. A newer minimum Vale version requires a major release.
