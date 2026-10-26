@@ -1,6 +1,8 @@
 name: Release
 
 # Publishes @devexpress/vale-styles to GitHub Packages when a maintainer pushes a vX.Y.Z tag.
+# A stable tag must point to a commit in the first-parent history of main (the merge commit of the
+# release pull request), and its version must not be lower than the current `latest` version.
 # A prerelease tag (vX.Y.Z-rc.N) on any commit, not only main, publishes under the `next`
 # dist-tag and creates a GitHub prerelease. Use it to test a release before merging. A prerelease
 # takes its notes from the CHANGELOG.md Unreleased section until the version has a section of its own.
@@ -38,6 +40,7 @@ jobs:
       - uses: actions/checkout@v7
         with:
           persist-credentials: false
+          fetch-depth: 0
       - uses: actions/setup-node@v7
         with:
           node-version: lts/*
@@ -68,6 +71,27 @@ jobs:
               exit 1
             fi
           fi
+
+      - name: Check that a stable tag is on main and not older than latest
+        if: ${{ !contains(github.ref_name, '-') }}
+        run: |
+          if ! grep -qx "$(git rev-parse HEAD)" <(git rev-list --first-parent origin/main); then
+            echo "::error::Tag $GITHUB_REF_NAME is not on the main branch. Tag the merge commit of the release pull request."
+            exit 1
+          fi
+          version="${GITHUB_REF_NAME#v}"
+          # With no `latest` dist-tag yet, npm view prints nothing. A package that does not exist yet fails with E404.
+          if ! latest="$(npm view @devexpress/vale-styles dist-tags.latest 2>"$RUNNER_TEMP/view.log")"; then
+            grep -q E404 "$RUNNER_TEMP/view.log" || { cat "$RUNNER_TEMP/view.log" >&2; exit 1; }
+          fi
+          latest="${latest%%-*}"
+          if [ -n "$latest" ] && [ "$version" != "$latest" ] &&
+             [ "$(printf '%s\n' "$version" "$latest" | sort -V | head -n 1)" = "$version" ]; then
+            echo "::error::$version is older than the latest version $latest. Publishing it would move the latest dist-tag back."
+            exit 1
+          fi
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # npm 11 refuses to publish a prerelease without an explicit dist-tag.
       - run: npm publish --tag ${{ contains(github.ref_name, '-') && 'next' || 'latest' }}

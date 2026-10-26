@@ -169,6 +169,13 @@ To support a different Vale version, update `@vvago/vale` in `devDependencies` a
 
 The `Release` workflow runs the tests in a job that has read-only access to the repository. A separate job, which installs no dependencies, then checks that the tag matches the `package.json` version and that `CHANGELOG.md` has a section for it, publishes the package to GitHub Packages, and creates a GitHub release with the changelog section as release notes.
 
+For a stable version, the workflow also checks that the tag points to the merge commit on `main`, not to a commit from the pull request branch, and that the version is not lower than the current `latest` version. If a check fails, the workflow publishes nothing. Delete the tag and tag the correct commit:
+
+```sh
+git tag -d v1.1.0
+git push origin --delete v1.1.0
+```
+
 ### Test a Release
 
 To check the release workflow, package permissions, or a consumer setup before you merge, publish a prerelease from your branch. The `Release` workflow publishes a prerelease version under the `next` npm tag, so it never becomes the `latest` version, and creates a GitHub prerelease. Use the version of the next release with an `-rc.N` suffix (for example, `1.1.0-rc.1`).
