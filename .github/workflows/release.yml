@@ -4,19 +4,40 @@ name: Release
 # A prerelease tag (vX.Y.Z-rc.N) on any commit, not only main, publishes under the `next`
 # dist-tag and creates a GitHub prerelease. Use it to test a release before merging. A prerelease
 # takes its notes from the CHANGELOG.md Unreleased section until the version has a section of its own.
+#
+# The test job runs third-party code (npm ci install scripts and the downloaded Vale binary), so it
+# gets a read-only token. The publish job has write access and runs no third-party code: npm publish
+# builds dist/ with the dependency-free scripts/build.mjs. Do not add install or test steps to it.
 on:
   push:
     tags: ['v*.*.*']
 
 permissions:
-  contents: write
-  packages: write
+  contents: read
 
 jobs:
-  publish:
+  test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: lts/*
+      - run: npm ci
+      - run: npm test
+
+  publish:
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - uses: actions/setup-node@v7
         with:
           node-version: lts/*
@@ -47,9 +68,6 @@ jobs:
               exit 1
             fi
           fi
-
-      - run: npm ci
-      - run: npm test
 
       # npm 11 refuses to publish a prerelease without an explicit dist-tag.
       - run: npm publish --tag ${{ contains(github.ref_name, '-') && 'next' || 'latest' }}

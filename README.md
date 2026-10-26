@@ -167,7 +167,7 @@ To support a different Vale version, update `@vvago/vale` in `devDependencies` a
    git push origin v1.1.0
    ```
 
-The `Release` workflow checks that the tag matches the `package.json` version and that `CHANGELOG.md` has a section for it. The workflow then runs the tests, publishes the package to GitHub Packages, and creates a GitHub release with the changelog section as release notes.
+The `Release` workflow runs the tests in a job that has read-only access to the repository. A separate job, which installs no dependencies, then checks that the tag matches the `package.json` version and that `CHANGELOG.md` has a section for it, publishes the package to GitHub Packages, and creates a GitHub release with the changelog section as release notes.
 
 ### Test a Release
 
