@@ -151,6 +151,10 @@ The `npm test` command builds the package in the `dist/` folder, installs it in 
 
 Add an entry to the `Unreleased` section of [CHANGELOG.md](CHANGELOG.md) for each change. State whether the change can produce new alerts.
 
+### Change the Vale Version
+
+To support a different Vale version, update `@vvago/vale` in `devDependencies` and the `peerDependencies` range in `package.json`, and run `npm install` and `npm test`. A newer minimum Vale version requires a major release (see the [version policy](#version-policy)).
+
 ## Release a Version
 
 1. In a new branch, run `npm version <major|minor|patch> --no-git-tag-version`. Use the [version policy](#version-policy) to choose the level.
@@ -185,5 +189,3 @@ The tag points to a commit that is not on any branch, so your branch keeps its v
 ### Package Visibility
 
 GitHub Packages makes a new package private, even if the repository is public. After the first release, an organization owner must change the visibility of `@devexpress/vale-styles` to internal in the package settings, so that workflows in other DevExpress repositories can install it.
-
-To support a different Vale version, update `@vvago/vale` in `devDependencies` and the `peerDependencies` range in `package.json`, and run `npm install` and `npm test`. A newer minimum Vale version requires a major release.
