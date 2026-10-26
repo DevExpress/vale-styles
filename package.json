@@ -26,6 +26,11 @@
   "peerDependencies": {
     "@vvago/vale": "~3.25.1"
   },
+  "peerDependenciesMeta": {
+    "@vvago/vale": {
+      "optional": true
+    }
+  },
   "devDependencies": {
     "@vvago/vale": "3.25.1"
   },

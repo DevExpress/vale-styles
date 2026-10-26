@@ -33,7 +33,7 @@ The `@devexpress/vale-styles` package is published to GitHub Packages. Each pack
 
    The `@vvago/vale` package downloads the Vale binary in a `postinstall` script. If npm reports that the script is not approved, run `npm install-scripts approve @vvago/vale`. Do not install with `--ignore-scripts`.
 
-The package declares the Vale version it supports in `peerDependencies`. npm fails the installation if your Vale version does not match. This check works only when you run Vale from npm (`npx vale`). A Vale binary from another source (for example, a Docker image) skips it.
+The package declares the Vale version it supports as an optional peer dependency. npm does not install Vale for you, but if `@vvago/vale` is installed, npm fails the installation when its version does not match. If you run a Vale binary from another source (for example, a Docker image), install only `@devexpress/vale-styles`. npm does not check the version of such a binary, so make sure it matches.
 
 ### Configure Vale
 

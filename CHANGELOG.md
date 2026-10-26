@@ -9,4 +9,4 @@ Add entries under `Unreleased` as you make changes. When you release, rename `Un
 ## 1.0.0 - 2026-10-23
 
 - First npm release. The package contains the DX style, the trimmed Microsoft style, the DX vocabulary, the shared Vale configuration, and the JUnit and rdjsonl output templates.
-- Requires Vale 3.25 (`@vvago/vale ~3.25.1`).
+- Requires Vale 3.25. The optional peer dependency `@vvago/vale ~3.25.1` checks the version when you install Vale from npm.
