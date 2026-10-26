@@ -2,7 +2,8 @@ name: Release
 
 # Publishes @devexpress/vale-styles to GitHub Packages when a maintainer pushes a vX.Y.Z tag.
 # A prerelease tag (vX.Y.Z-rc.N) on any commit, not only main, publishes under the `next`
-# dist-tag and creates a GitHub prerelease. Use it to test a release before merging.
+# dist-tag and creates a GitHub prerelease. Use it to test a release before merging. A prerelease
+# takes its notes from the CHANGELOG.md Unreleased section until the version has a section of its own.
 on:
   push:
     tags: ['v*.*.*']
@@ -29,11 +30,22 @@ jobs:
             echo "::error::Tag $GITHUB_REF_NAME does not match package.json version $version."
             exit 1
           fi
-          # A prerelease such as 1.1.0-rc.1 uses the notes of 1.1.0.
-          awk -v version="${version%%-*}" '/^## / { printing = ($2 == version); next } printing' CHANGELOG.md > "$RUNNER_TEMP/notes.md"
-          if ! grep -q '[^[:space:]]' "$RUNNER_TEMP/notes.md"; then
-            echo "::error::CHANGELOG.md has no '## ${version%%-*}' section."
-            exit 1
+          # A prerelease such as 1.1.0-rc.1 uses the notes of 1.1.0. If the changelog has no 1.1.0
+          # section yet (a prerelease from a feature branch), it uses the Unreleased notes.
+          base="${version%%-*}"
+          notes() {
+            awk -v heading="$1" '/^## / { printing = ($2 == heading); next } printing' CHANGELOG.md > "$RUNNER_TEMP/notes.md"
+            grep -q '[^[:space:]]' "$RUNNER_TEMP/notes.md"
+          }
+          if ! notes "$base"; then
+            if [ "$version" = "$base" ]; then
+              echo "::error::CHANGELOG.md has no '## $base' section."
+              exit 1
+            fi
+            if ! notes Unreleased; then
+              echo "::error::CHANGELOG.md has no '## $base' section and no entries under '## Unreleased'."
+              exit 1
+            fi
           fi
 
       - run: npm ci

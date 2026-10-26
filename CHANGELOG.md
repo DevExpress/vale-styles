@@ -2,7 +2,7 @@
 
 This file lists the changes in each release of `@devexpress/vale-styles`. Releases follow the version policy in [README.md](README.md#version-policy): a change that can raise new alerts on existing text is a major release.
 
-Add entries under `Unreleased` as you make changes. When you release, rename `Unreleased` to the new version and date, and start a new empty `Unreleased` section. The release workflow uses the section for the version as the GitHub release notes, and it fails if that section is missing.
+Add entries under `Unreleased` as you make changes. When you release, rename `Unreleased` to the new version and date, and start a new empty `Unreleased` section. The release workflow uses the section for the version as the GitHub release notes, and it fails if that section is missing. A prerelease uses the `Unreleased` section if the section for its version is missing.
 
 ## Unreleased
 

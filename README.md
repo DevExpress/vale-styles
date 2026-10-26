@@ -167,18 +167,20 @@ The `Release` workflow checks that the tag matches the `package.json` version an
 
 ### Test a Release
 
-To check the release workflow, package permissions, or a consumer setup before you merge, publish a prerelease from your branch. The `Release` workflow publishes a prerelease version under the `next` npm tag, so it never becomes the `latest` version, and creates a GitHub prerelease. The release notes come from the `CHANGELOG.md` section of the base version (for example, `1.0.0` for `1.0.0-rc.1`).
+To check the release workflow, package permissions, or a consumer setup before you merge, publish a prerelease from your branch. The `Release` workflow publishes a prerelease version under the `next` npm tag, so it never becomes the `latest` version, and creates a GitHub prerelease. Use the version of the next release with an `-rc.N` suffix (for example, `1.1.0-rc.1`).
+
+The release notes come from the `CHANGELOG.md` section of the base version (for example, `1.1.0` for `1.1.0-rc.1`). If that section does not exist yet, for example in a feature branch, the notes come from the `Unreleased` section, which must contain at least one entry.
 
 ```sh
 git switch --detach
-npm version 1.0.0-rc.1 --no-git-tag-version
-git commit -am "Release 1.0.0-rc.1"
-git tag v1.0.0-rc.1
-git push origin v1.0.0-rc.1
+npm version 1.1.0-rc.1 --no-git-tag-version
+git commit -am "Release 1.1.0-rc.1"
+git tag v1.1.0-rc.1
+git push origin v1.1.0-rc.1
 git switch -
 ```
 
-The tag points to a commit that is not on any branch, so your branch keeps its version. To test the prerelease in a documentation repository, install the exact version in a branch of that repository: `npm install --save-dev --save-exact @devexpress/vale-styles@1.0.0-rc.1`. After the test, you can delete the prerelease version in the package settings and delete the GitHub prerelease.
+The tag points to a commit that is not on any branch, so your branch keeps its version. To test the prerelease in a documentation repository, install the exact version in a branch of that repository: `npm install --save-dev --save-exact @devexpress/vale-styles@1.1.0-rc.1`. After the test, you can delete the prerelease version in the package settings and delete the GitHub prerelease.
 
 ### Package Visibility
 
