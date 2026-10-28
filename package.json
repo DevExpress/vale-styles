@@ -1,0 +1,44 @@
+{
+  "name": "@devexpress/vale-styles",
+  "version": "1.0.0",
+  "description": "Vale styles that implement the DevExpress Writing Style Guide",
+  "keywords": [
+    "vale",
+    "vale-style",
+    "style-guide",
+    "documentation",
+    "linter"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DevExpress/vale-styles.git"
+  },
+  "files": [
+    "dist/",
+    "THIRD_PARTY_NOTICES.md"
+  ],
+  "scripts": {
+    "build": "vale-style-package-publisher build",
+    "prepack": "npm run build",
+    "test": "vale-style-package-publisher test"
+  },
+  "peerDependencies": {
+    "@vvago/vale": "~3.25.1"
+  },
+  "peerDependenciesMeta": {
+    "@vvago/vale": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@devexpress/vale-style-package-publisher": "1.0.0",
+    "@vvago/vale": "3.25.1"
+  },
+  "allowScripts": {
+    "@vvago/vale": true
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  }
+}

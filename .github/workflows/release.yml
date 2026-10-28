@@ -1,0 +1,79 @@
+name: Release
+
+# Publishes @devexpress/vale-styles to GitHub Packages when a maintainer pushes a vX.Y.Z tag.
+# A stable tag must point to a commit in the first-parent history of main (the merge commit of the
+# release pull request), and its version must not be lower than the current `latest` version.
+# A prerelease tag (vX.Y.Z-rc.N) on any commit, not only main, publishes under the `next`
+# dist-tag and creates a GitHub prerelease. Use it to test a release before merging. A prerelease
+# takes its notes from the CHANGELOG.md Unreleased section until the version has a section of its own.
+#
+# The checks, the build, and the smoke test come from the internal @devexpress/vale-style-package-publisher
+# package, which this repository's GITHUB_TOKEN can read.
+#
+# The test job runs third-party code (npm ci install scripts and the downloaded Vale binary), so it
+# gets a read-only token. The publish job has write access and runs no third-party code: it installs
+# with --ignore-scripts, so the Vale binary is never downloaded, and runs only the dependency-free
+# vale-style-package-publisher to check the tag and build dist/. Do not add install scripts or test steps to it.
+on:
+  push:
+    tags: ['v*.*.*']
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: lts/*
+          registry-url: https://npm.pkg.github.com
+          scope: '@devexpress'
+      - run: npm ci
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - run: npm test
+
+  publish:
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: lts/*
+          registry-url: https://npm.pkg.github.com
+          scope: '@devexpress'
+
+      # --ignore-scripts keeps install scripts, including the Vale binary download, out of this job.
+      - run: npm ci --ignore-scripts
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check the tag and write the release notes
+        run: npx --no vale-style-package-publisher check-release --notes "$RUNNER_TEMP/notes.md"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # npm 11 refuses to publish a prerelease without an explicit dist-tag.
+      - run: npm publish --tag ${{ contains(github.ref_name, '-') && 'next' || 'latest' }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create the GitHub release
+        run: >-
+          gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --notes-file "$RUNNER_TEMP/notes.md"
+          ${{ contains(github.ref_name, '-') && '--prerelease' || '' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
