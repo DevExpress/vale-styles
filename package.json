@@ -32,7 +32,7 @@
     }
   },
   "devDependencies": {
-    "@devexpress/vale-style-package-publisher": "1.0.0",
+    "@devexpress/vale-style-package-publisher": "1.0.2",
     "@vvago/vale": "3.25.1"
   },
   "allowScripts": {
