@@ -10,20 +10,7 @@ permissions:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          persist-credentials: false
-      - uses: actions/setup-node@v7
-        with:
-          node-version: lts/*
-          registry-url: https://npm.pkg.github.com
-          scope: '@devexpress'
-      - run: npm ci
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - run: npm test
+    uses: ./.github/workflows/ci.yml
 
   publish:
     needs: test
